@@ -18,6 +18,9 @@ export async function GET(request: Request) {
         equals: search,
         mode: "insensitive",
       },
+      znacenje: {
+        not: "",
+      },
     },
   });
 

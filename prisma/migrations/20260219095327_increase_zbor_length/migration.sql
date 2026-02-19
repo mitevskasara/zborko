@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "zborovi" ALTER COLUMN "zbor" SET DATA TYPE VARCHAR(60);

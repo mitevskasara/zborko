@@ -9,8 +9,8 @@ datasource db {
 
 model Zbor {
   id       Int    @id @default(autoincrement())
-  zbor     String @db.VarChar(50)
-  vid      String @db.VarChar(10)
+  zbor     String @db.VarChar(60)
+  vid      String @db.VarChar(20)
   rod      Rod?
   znacenje String
 
