@@ -1,16 +1,18 @@
 'use client';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Volume2, Share2, Heart, Copy, Check } from 'lucide-react';
+import { Share2, Heart, Copy, Check } from 'lucide-react';
 import { cn, extractExamples } from '@/lib/utils';
+import { StorageService } from '@/app/core/storage';
 
 interface WordCardProps {
   data: IWord | null;
+  compact?: boolean;
   onNext?: () => void;
 }
 
-export const WordCard: React.FC<WordCardProps> = ({ data, onNext }) => {
-  const [isLiked, setIsLiked] = useState(false);
+export const WordCard: React.FC<WordCardProps> = ({ data, onNext, compact = false }) => {
+  const [isLiked, setIsLiked] = useState(data ? StorageService.exists('saved', data) : false);
   const [copied, setCopied] = useState(false);
   const { znacenje, primeri } = extractExamples(data?.znacenje);
 
@@ -19,6 +21,16 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext }) => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const handleSave = (word:IWord | null) => {
+    if (word && isLiked) {
+      StorageService.remove('saved', word);
+      setIsLiked(false);
+    } else if (word) {
+      StorageService.save('saved', word);
+      setIsLiked(true);
+    }
+  }
 
   return (
     <div className="w-full max-w-md mx-auto perspective-1000">
@@ -35,12 +47,16 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext }) => {
 
           <div className="p-8 pb-6">
             <div className="flex justify-between items-start mb-6">
+             {!compact ?
               <span className="px-3 py-1 rounded-full bg-zinc-100 text-zinc-500 text-xs font-medium uppercase tracking-wider">
                 Збор на денот
-              </span>
+              </span> :
+              <h1 className="text-4xl font-serif font-bold text-zinc-900 mb-2 tracking-tight">
+                {data?.zbor}
+              </h1>}
               <div className="flex gap-2">
                 <button
-                  onClick={() => setIsLiked(!isLiked)}
+                  onClick={() => handleSave(data)}
                   className={cn(
                     'p-2 rounded-full transition-colors',
                     isLiked
@@ -55,9 +71,10 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext }) => {
             </div>
 
             <div className="mb-2">
+              {!compact &&
               <h1 className="text-4xl font-serif font-bold text-zinc-900 mb-2 tracking-tight">
                 {data?.zbor}
-              </h1>
+              </h1>}
               <div className="flex items-center gap-3 text-zinc-500 font-medium">
                 <span className="text-lg">{data?.rod}</span>
                 {(data?.rod || data?.vid) && (
@@ -128,6 +145,7 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext }) => {
         </motion.div>
       </AnimatePresence>
 
+      {!compact &&
       <div className="mt-8 flex justify-center">
         <button
           onClick={onNext}
@@ -148,7 +166,7 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext }) => {
             />
           </svg>
         </button>
-      </div>
+      </div>}
     </div>
   );
 };

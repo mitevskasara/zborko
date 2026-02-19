@@ -3,10 +3,11 @@ import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Heart, Search } from 'lucide-react';
 import { WordCard } from '../components/WordCard';
-import routes from '@/constants/routes';
+import routes from '@/app/constants/routes';
+import { StorageService } from '../core/storage';
 
 export default function Favourites() {
-  const favoriteWords: IWord[] = [];
+  const favoriteWords: IWord[] = StorageService.get('saved');
 
   return (
     <div className="w-full max-w-6xl mx-auto">
@@ -46,7 +47,7 @@ export default function Favourites() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <WordCard data={word} />
+              <WordCard data={word} compact />
             </motion.div>
           ))}
         </div>

@@ -4,11 +4,18 @@ export const StorageService = {
     return data ? JSON.parse(data) : [];
   },
 
+  exists(key: string, value: IWord) {
+    const existing = this.get(key);
+    return existing.some(
+      (item: IWord) => JSON.stringify(item) === JSON.stringify(value)
+    );
+  },
+
   save(key: string, value: IWord) {
     const existing = this.get(key);
 
     const isDuplicate = existing.some(
-      (item: string) => JSON.stringify(item) === JSON.stringify(value)
+      (item: IWord) => JSON.stringify(item) === JSON.stringify(value)
     );
 
     if (!isDuplicate) {
@@ -22,7 +29,7 @@ export const StorageService = {
   remove(key: string, value: IWord) {
     const existing = this.get(key);
     const filtered = existing.filter(
-      (item: string) => JSON.stringify(item) !== JSON.stringify(value)
+      (item: IWord) => JSON.stringify(item) !== JSON.stringify(value)
     );
     localStorage.setItem(key, JSON.stringify(filtered));
   },

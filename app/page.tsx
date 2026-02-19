@@ -4,8 +4,8 @@ import { motion } from 'motion/react';
 import { WordCard } from './components/WordCard';
 import { Logo } from './components/Logo';
 import { cn } from '@/lib/utils';
-import api from '@/constants/api';
-import { letters } from '@/constants/general';
+import api from '@/app/constants/api';
+import { letters } from '@/app/constants/general';
 
 export default function Home() {
   const [currentWord, setCurrentWord] = useState<IWord | null>(null);
