@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "zborovi" ALTER COLUMN "vid" SET DATA TYPE VARCHAR(20);
