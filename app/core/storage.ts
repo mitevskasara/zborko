@@ -1,40 +1,49 @@
 export const StorageService = {
   get(key: string) {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
+    if (typeof window !== 'undefined') {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : [];
+    }
   },
 
   exists(key: string, value: IWord) {
-    const existing = this.get(key);
-    return existing.some(
-      (item: IWord) => JSON.stringify(item) === JSON.stringify(value)
-    );
+    if (typeof window !== 'undefined') {
+      const existing = this.get(key);
+      return existing.some(
+        (item: IWord) => JSON.stringify(item) === JSON.stringify(value)
+      );
+    }
   },
 
   save(key: string, value: IWord) {
-    const existing = this.get(key);
+    if (typeof window !== 'undefined') {
+      const existing = this.get(key);
 
-    const isDuplicate = existing.some(
-      (item: IWord) => JSON.stringify(item) === JSON.stringify(value)
-    );
+      const isDuplicate = existing.some(
+        (item: IWord) => JSON.stringify(item) === JSON.stringify(value)
+      );
+      if (!isDuplicate) {
+        existing.push(value);
+        localStorage.setItem(key, JSON.stringify(existing));
+      }
 
-    if (!isDuplicate) {
-      existing.push(value);
-      localStorage.setItem(key, JSON.stringify(existing));
+      return !isDuplicate;
     }
-
-    return !isDuplicate;
   },
 
   remove(key: string, value: IWord) {
-    const existing = this.get(key);
-    const filtered = existing.filter(
-      (item: IWord) => JSON.stringify(item) !== JSON.stringify(value)
-    );
-    localStorage.setItem(key, JSON.stringify(filtered));
+    if (typeof window !== 'undefined') {
+      const existing = this.get(key);
+      const filtered = existing.filter(
+        (item: IWord) => JSON.stringify(item) !== JSON.stringify(value)
+      );
+      localStorage.setItem(key, JSON.stringify(filtered));
+    }
   },
 
   clear(key: string) {
-    localStorage.removeItem(key);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(key);
+    }
   },
 };

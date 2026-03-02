@@ -11,8 +11,14 @@ interface WordCardProps {
   onNext?: () => void;
 }
 
-export const WordCard: React.FC<WordCardProps> = ({ data, onNext, compact = false }) => {
-  const [isLiked, setIsLiked] = useState(data ? StorageService.exists('saved', data) : false);
+export const WordCard: React.FC<WordCardProps> = ({
+  data,
+  onNext,
+  compact = false,
+}) => {
+  const [isLiked, setIsLiked] = useState(
+    data ? StorageService.exists('saved', data) : false
+  );
   const [copied, setCopied] = useState(false);
   const { znacenje, primeri } = extractExamples(data?.znacenje);
 
@@ -22,7 +28,7 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext, compact = fals
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSave = (word:IWord | null) => {
+  const handleSave = (word: IWord | null) => {
     if (word && isLiked) {
       StorageService.remove('saved', word);
       setIsLiked(false);
@@ -30,7 +36,7 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext, compact = fals
       StorageService.save('saved', word);
       setIsLiked(true);
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-md mx-auto perspective-1000">
@@ -47,13 +53,15 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext, compact = fals
 
           <div className="p-8 pb-6">
             <div className="flex justify-between items-start mb-6">
-             {!compact ?
-              <span className="px-3 py-1 rounded-full bg-zinc-100 text-zinc-500 text-xs font-medium uppercase tracking-wider">
-                Збор на денот
-              </span> :
-              <h1 className="text-4xl font-serif font-bold text-zinc-900 mb-2 tracking-tight">
-                {data?.zbor}
-              </h1>}
+              {!compact ? (
+                <span className="px-3 py-1 rounded-full bg-zinc-100 text-zinc-500 text-xs font-medium uppercase tracking-wider">
+                  Збор на денот
+                </span>
+              ) : (
+                <h1 className="text-4xl font-serif font-bold text-zinc-900 mb-2 tracking-tight">
+                  {data?.zbor}
+                </h1>
+              )}
               <div className="flex gap-2">
                 <button
                   onClick={() => handleSave(data)}
@@ -71,10 +79,11 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext, compact = fals
             </div>
 
             <div className="mb-2">
-              {!compact &&
-              <h1 className="text-4xl font-serif font-bold text-zinc-900 mb-2 tracking-tight">
-                {data?.zbor}
-              </h1>}
+              {!compact && (
+                <h1 className="text-4xl font-serif font-bold text-zinc-900 mb-2 tracking-tight">
+                  {data?.zbor}
+                </h1>
+              )}
               <div className="flex items-center gap-3 text-zinc-500 font-medium">
                 <span className="text-lg">{data?.rod}</span>
                 {(data?.rod || data?.vid) && (
@@ -132,8 +141,8 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext, compact = fals
                   navigator
                     .share({
                       title: `Збор на денот: ${data?.zbor}`,
-                      text: `${data?.zbor}: ${data?.znacenje}`,
-                      url: window.location.href,
+                      text: `/${data?.zbor}`,
+                      url: `/${data?.zbor}`,
                     })
                     .catch(() => {});
                 }
@@ -145,28 +154,29 @@ export const WordCard: React.FC<WordCardProps> = ({ data, onNext, compact = fals
         </motion.div>
       </AnimatePresence>
 
-      {!compact &&
-      <div className="mt-8 flex justify-center">
-        <button
-          onClick={onNext}
-          className="group flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-full font-medium shadow-lg shadow-zinc-200 hover:shadow-xl hover:scale-105 transition-all active:scale-95"
-        >
-          <span>Следен Збор</span>
-          <svg
-            className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      {!compact && (
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={onNext}
+            className="group flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-full font-medium shadow-lg shadow-zinc-200 hover:shadow-xl hover:scale-105 transition-all active:scale-95"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M14 5l7 7m0 0l-7 7m7-7H3"
-            />
-          </svg>
-        </button>
-      </div>}
+            <span>Следен Збор</span>
+            <svg
+              className="w-4 h-4 group-hover:translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -4,10 +4,10 @@ import { motion } from 'motion/react';
 import { Heart, Search } from 'lucide-react';
 import { WordCard } from '../components/WordCard';
 import routes from '@/app/constants/routes';
-import { StorageService } from '../core/storage';
+import useSaved from '@/lib/hooks/use-saved';
 
 export default function Favourites() {
-  const favoriteWords: IWord[] = StorageService.get('saved');
+  const favorites = useSaved();
 
   return (
     <div className="w-full max-w-6xl mx-auto">
@@ -38,9 +38,9 @@ export default function Favourites() {
         </motion.p>
       </div>
 
-      {favoriteWords.length > 0 ? (
+      {favorites.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {favoriteWords.map((word, index) => (
+          {favorites.map((word, index) => (
             <motion.div
               key={word.id}
               initial={{ opacity: 0, y: 20 }}
