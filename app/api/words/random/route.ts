@@ -5,9 +5,9 @@ export async function GET() {
   const randomWord = await prisma.$queryRaw<
     { id: number; zbor: string; znacenje: string }[]
   >`
-    SELECT * 
+    SELECT *
     FROM zborovi
-    WHERE char_length(zbor) > 3
+    WHERE "random" = true
       AND znacenje IS NOT NULL
       AND znacenje != ''
     ORDER BY RANDOM()
