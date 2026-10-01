@@ -6,24 +6,36 @@ import api from '@/app/constants/api';
 import { letters } from '@/app/constants/general';
 import { Logo } from '../components/Logo';
 import { WordCard } from '../components/WordCard';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function Home() {
-  const [currentWord, setCurrentWord] = useState<IWord | null>(null);
+  const [currentWord, setCurrentWord] = useState<IWordResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const pathname = usePathname();
   const param = decodeURIComponent(pathname?.replace('/', ''));
 
   const fetchWord = async () => {
     setLoading(true);
-    const res = await fetch(`${api.get}?zbor=${param}`);
-    const word = await res.json();
-    setCurrentWord(word);
+    setError(null);
+    const res = await fetch(`${api.get}?zbor=${encodeURIComponent(param)}`);
+    const body = await res.json();
+
+    if (!res.ok) {
+      setCurrentWord(null);
+      setError(body?.message ?? 'Зборот не е пронајден');
+      setLoading(false);
+      return;
+    }
+
+    setCurrentWord(body);
     setLoading(false);
   };
 
   const fetchRandomWord = async () => {
     setLoading(true);
+    setError(null);
     const res = await fetch(api.random);
     const word = await res.json();
     setCurrentWord(word);
@@ -44,7 +56,7 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [param]);
 
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col font-sans text-zinc-900 selection:bg-emerald-100 selection:text-emerald-900 overflow-hidden relative">
@@ -123,8 +135,41 @@ export default function Home() {
               </motion.div>
             </div>
 
-            <div className="flex justify-center md:justify-end w-full">
+            <div className="flex flex-col items-center md:items-end gap-6 w-full">
+              {currentWord?.similarWords?.length ? (
+                <div className="w-full max-w-md">
+                  <p className="text-sm text-zinc-600 mb-2 text-center md:text-right">
+                    <span className="font-semibold text-zinc-900">
+                      {param}
+                    </span>{' '}
+                    не е пронајден. Слични зборови:
+                  </p>
+                  <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+                    {currentWord.similarWords.map((similar) => (
+                      <button
+                        key={similar.zbor}
+                        onClick={() => router.push(`/${encodeURIComponent(similar.zbor)}`)}
+                        className="px-3 py-1.5 bg-white border border-zinc-200 rounded-full text-sm text-zinc-700 hover:border-emerald-400 hover:text-emerald-700 transition-colors"
+                      >
+                        {similar.zbor}
+                        {similar.vid && (
+                          <span className="ml-1.5 text-xs text-zinc-400 italic">
+                            {similar.vid}
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               <WordCard data={currentWord} onNext={handleNextWord} />
+
+              {error && (
+                <p className="w-full max-w-md text-center text-sm text-zinc-500 bg-zinc-100 rounded-2xl py-6 px-4">
+                  {error}
+                </p>
+              )}
             </div>
           </div>
         )}
