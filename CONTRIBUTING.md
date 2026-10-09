@@ -7,9 +7,11 @@ Thanks for your interest in improving Зборко!
 1. Fork and clone the repository.
 2. Install dependencies: `npm install`
 3. Copy `.env.example` to `.env` and set `DATABASE_URL` (see the README).
-4. Apply migrations and seed the database:
+4. Apply migrations and seed the database (the full dictionary is not
+   distributed; start from the sample or your own data):
    ```bash
    npx prisma migrate dev
+   cp prisma/seed.sample.ts prisma/seed.ts
    npx prisma db seed
    ```
 5. Start the dev server: `npm run dev`

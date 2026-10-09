@@ -54,6 +54,9 @@ DATABASE_URL="postgresql://user:password@host:5432/zborko"
 
 ```bash
 npx prisma migrate dev
+# The full dictionary is not included in this repository.
+# Start from the sample, or supply your own dataset:
+cp prisma/seed.sample.ts prisma/seed.ts
 npx prisma db seed
 ```
 
@@ -120,16 +123,17 @@ lib/
 prisma/
   schema.prisma      Database schema
   migrations/        SQL migrations
-  seed.ts            Seed data
+  seed.sample.ts     Small sample dataset to start from
 ```
 
 ## Data
 
-`prisma/seed.ts` loads the dictionary used by the app. The **code** in this
-repository is licensed under the MIT license (see [LICENSE](./LICENSE)). The
-dictionary **data** is a separate work with its own provenance and licensing;
-confirm that you have the right to redistribute it, or replace it with a dataset
-whose license permits redistribution, before publishing or deploying it publicly.
+The full dictionary dataset is **not** included in this repository; only a small
+sample (`prisma/seed.sample.ts`) is provided so the app can run locally. The
+**code** is licensed under the MIT license (see [LICENSE](./LICENSE)). The
+dictionary **data** is a separate work with its own provenance and licensing:
+supply a dataset whose license permits redistribution. To use the app locally,
+copy the sample (or your own dataset) to `prisma/seed.ts`.
 
 ## Contributing
 
