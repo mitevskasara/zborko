@@ -10,10 +10,17 @@ export const dynamic = 'force-dynamic';
  * per call. Instead we cache the candidate ids once per server instance and
  * pick one at random, then fetch that single row by primary key.
  */
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
 let cachedIds: number[] = [];
+let cachedAt = 0;
 
 async function getCandidateIds(): Promise<number[]> {
-  if (cachedIds.length > 0) return cachedIds;
+  const now = Date.now();
+
+  if (cachedIds.length > 0 && now - cachedAt < CACHE_TTL_MS) {
+    return cachedIds;
+  }
 
   const rows = await prisma.$queryRaw<{ id: number }[]>`
     SELECT id
@@ -24,6 +31,7 @@ async function getCandidateIds(): Promise<number[]> {
   `;
 
   cachedIds = rows.map((row) => row.id);
+  cachedAt = now;
   return cachedIds;
 }
 
