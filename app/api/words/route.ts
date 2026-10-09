@@ -1,5 +1,5 @@
-import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import prisma from '@/lib/prisma';
+import { NextResponse } from 'next/server';
 import {
   escapeLikePattern,
   MIN_HEADWORD_LENGTH,
@@ -7,9 +7,15 @@ import {
   pickBestRow,
   type MatchKind,
   type ZborRow,
-} from "@/lib/word-match";
+} from '@/lib/word-match';
 
 const SIMILAR_LIMIT = 5;
+
+/**
+ * Upper bound on the input term. The DB normalizes with lower(), so unbounded
+ * input would let a single request do O(n) work on an arbitrary-size string.
+ */
+const MAX_TERM_LENGTH = 100;
 
 type Match = { kind: MatchKind; rows: ZborRow[] };
 
@@ -66,7 +72,7 @@ async function findQueryIsPrefix(term: string): Promise<ZborRow[]> {
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const search = url.searchParams.get("zbor");
+  const search = url.searchParams.get('zbor');
 
   if (!search) {
     return NextResponse.json(
@@ -84,23 +90,30 @@ export async function GET(request: Request) {
     );
   }
 
+  if (term.length > MAX_TERM_LENGTH) {
+    return NextResponse.json(
+      { message: `'zbor' must be at most ${MAX_TERM_LENGTH} characters` },
+      { status: 400 }
+    );
+  }
+
   const exact = await findExact(term);
 
   let match: Match;
   if (exact.length > 0) {
-    match = { kind: "exact", rows: exact };
+    match = { kind: 'exact', rows: exact };
   } else {
     const shorterHeadword = await findPrefixOfQuery(term);
 
     if (shorterHeadword.length > 0) {
-      match = { kind: "prefix-of-query", rows: shorterHeadword };
+      match = { kind: 'prefix-of-query', rows: shorterHeadword };
     } else {
       const longerHeadword = await findQueryIsPrefix(term);
 
       match =
         longerHeadword.length > 0
-          ? { kind: "query-is-prefix", rows: longerHeadword }
-          : { kind: "exact", rows: [] };
+          ? { kind: 'query-is-prefix', rows: longerHeadword }
+          : { kind: 'exact', rows: [] };
     }
   }
 
@@ -108,7 +121,7 @@ export async function GET(request: Request) {
 
   if (!best) {
     return NextResponse.json(
-      { message: "Word not found", similarWords: [] },
+      { message: 'Word not found', similarWords: [] },
       { status: 404 }
     );
   }
