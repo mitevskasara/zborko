@@ -37,6 +37,8 @@ export default function Home() {
     let active = true;
 
     (async () => {
+      setLoading(true);
+      setError(null);
       const res = await fetch(`${api.get}?zbor=${encodeURIComponent(param)}`);
       const body = await res.json();
       if (!active) return;

@@ -2,11 +2,16 @@ import type { IWord } from '@/app/types';
 
 export const StorageService = {
   get(key: string): IWord[] {
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') {
+      return [];
+    }
+
+    try {
       const data = localStorage.getItem(key);
       return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
     }
-    return [];
   },
 
   exists(key: string, value: IWord) {
