@@ -1,168 +1,141 @@
-# Next.js & Prisma Postgres Auth Starter
+# Зборко (Zborko)
 
-This repository provides a boilerplate to quickly set up a Next.js demo application with authentication using [NextAuth.js v4](https://next-auth.js.org/), [Prisma Postgres](https://www.prisma.io/postgres) and [Prisma ORM](https://www.prisma.io/orm), and deploy it to Vercel. It includes an easy setup process and example routes that demonstrate basic CRUD operations against the database.
+Зборко is a small Macedonian "word of the day" web app. It shows a random
+dictionary headword with its definition and examples, lets you search a word
+directly from the URL, and keeps a personal favorites list in the browser.
+
+The project is built with the Next.js App Router, Prisma ORM and PostgreSQL, and
+also exposes the dictionary through a small JSON API.
 
 ## Features
 
-- Next.js 15 app with App Router, Server Actions & API Routes
-- Data modeling, database migrations, seeding & querying
-- Log in and sign up authentication flows
-- CRUD operations to create, view and delete blog posts
-- Pagination, filtering & relations queries
+- Random word-of-the-day card with definition and examples
+- Direct word lookup by URL (e.g. `/куќа`) with fuzzy "similar words" suggestions
+- JSON API for word lookup and random words
+- Favorites stored locally in the browser (`localStorage`) — no account needed
+- Responsive UI with Tailwind CSS and Motion animations
+
+## Tech stack
+
+- [Next.js](https://nextjs.org/) 16 (App Router, React 19)
+- [Prisma ORM](https://www.prisma.io/orm) 7 with PostgreSQL
+- [Tailwind CSS](https://tailwindcss.com/) 4
+- [Motion](https://motion.dev/) for animation
+- TypeScript
 
 ## Getting started
 
+### Prerequisites
+
+- Node.js 20+
+- A PostgreSQL database (a free [Prisma Postgres](https://www.prisma.io/postgres)
+  instance works well)
+
 ### 1. Install dependencies
 
-After cloning the repo and navigating into it, install dependencies:
-
-```
+```bash
 npm install
 ```
 
-### 1. Create a Prisma Postgres instance
+### 2. Configure the environment
 
-Create a Prisma Postgres instance by running the following command:
-
-```
-npx prisma init --db
-```
-
-This command is interactive and will prompt you to:
-
-1. Log in to the [Prisma Console](https://console.prisma.io)
-1. Select a **region** for your Prisma Postgres instance
-1. Give a **name** to your Prisma project
-
-Once the command has terminated, copy the **Database URL** from the terminal output. You'll need it in the next step when you configure your `.env` file.
-
-<!-- Create a Prisma Postgres database instance using [Prisma Data Platform](https://console.prisma.io):
-
-1. Navigate to [Prisma Data Platform](https://console.prisma.io).
-2. Click **New project** to create a new project.
-3. Enter a name for your project in the **Name** field.
-4. Inside the **Prisma Postgres** section, click **Get started**.
-5. Choose a region close to your location from the **Region** dropdown.
-6. Click **Create project** to set up your database. This redirects you to the database setup page.
-7. In the **Set up database access** section, copy the `DATABASE_URL`. You will use this in the next steps. -->
-
-### 2. Set up your `.env` file
-
-You now need to configure your database connection via an environment variable.
-
-First, create an `.env` file:
+Copy the example environment file and set your database connection string:
 
 ```bash
-touch .env
+cp .env.example .env
 ```
-
-Then update the `.env` file by replacing the existing `DATABASE_URL` value with the one you previously copied. It will look similar to this:
 
 ```bash
-DATABASE_URL="prisma+postgres://accelerate.prisma-data.net/?api_key=PRISMA_POSTGRES_API_KEY"
+# .env
+DATABASE_URL="postgresql://user:password@host:5432/zborko"
 ```
 
-To ensure your authentication works properly, you'll also need to set [env vars for NextAuth.js](https://next-auth.js.org/configuration/options):
+### 3. Set up the database
 
 ```bash
-AUTH_SECRET="RANDOM_32_CHARACTER_STRING"
-```
-
-You can generate a random 32 character string for the `AUTH_SECRET` secret with this command:
-
-```
-npx auth secret
-```
-
-In the end, your entire `.env` file should look similar to this (but using _your own values_ for the env vars):
-
-```bash
-DATABASE_URL="prisma+postgres://accelerate.prisma-data.net/?api_key=REDACTED-PRISMA-API-KEY"
-
-AUTH_SECRET="gTwLSXFeNWFRpUTmxlRniOfegXYw445pd0k6JqXd7Ag="
-```
-
-### 3. Migrate the database
-
-Run the following commands to set up your database and Prisma schema:
-
-```bash
-npx prisma migrate dev --name init
-```
-
-<!--
-<details>
-
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
-```bash
-# Using yarn
-yarn prisma migrate dev --name init
-
-# Using pnpm
-pnpm prisma migrate dev --name init
-
-# Using bun
-bun prisma migrate dev --name init
-```
-
-</details> -->
-
-### 4. Seed the database
-
-Add initial data to your database:
-
-```bash
+npx prisma migrate dev
 npx prisma db seed
 ```
 
-<details>
-
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
-```bash
-# Using yarn
-yarn prisma db seed
-
-# Using pnpm
-pnpm prisma db seed
-
-# Using bun
-bun prisma db seed
-```
-
-</details>
-
-### 5. Run the app
-
-Start the development server:
+### 4. Run the app
 
 ```bash
 npm run dev
 ```
 
-<details>
+Open [http://localhost:3000](http://localhost:3000).
 
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
+## API
 
-```bash
-# Using yarn
-yarn dev
+### `GET /api/words?zbor=<word>`
 
-# Using pnpm
-pnpm run dev
+Looks up a word. Returns the best matching entry plus similar words.
 
-# Using bun
-bun run dev
+```jsonc
+{
+  "id": 123,
+  "zbor": "куќа",
+  "vid": "Именка",
+  "rod": "женски",
+  "znacenje": "Дефиниција…",
+  "random": true,
+  "match": "exact",
+  "similarWords": [{ "zbor": "куќар", "vid": "Именка" }],
+}
 ```
 
-</details>
+`match` is one of `exact`, `prefix-of-query`, or `query-is-prefix`. Returns
+`404` when nothing matches and `400` for a missing or too-long query.
 
-Once the server is running, visit `http://localhost:3000` to start using the app.
+### `GET /api/words/random`
 
-## Next steps
+Returns a single random entry, or `404` if none is available.
 
-- [Prisma ORM documentation](https://www.prisma.io/docs/orm)
-- [Prisma Client API reference](https://www.prisma.io/docs/orm/prisma-client)
-- [Join our Discord community](https://discord.com/invite/prisma)
-- [Follow us on Twitter](https://twitter.com/prisma)
+## Scripts
+
+| Command          | Description                               |
+| ---------------- | ----------------------------------------- |
+| `npm run dev`    | Start the development server              |
+| `npm run build`  | Apply migrations and build for production |
+| `npm run start`  | Start the production server               |
+| `npm run lint`   | Run ESLint                                |
+| `npm run test`   | Run the unit tests                        |
+| `npm run format` | Format with Prettier                      |
+
+## Project structure
+
+```
+app/
+  api/words/         API route handlers (lookup + random)
+  components/        UI components (Header, Footer, Logo, WordCard)
+  constants/         API routes, navigation routes, shared constants
+  core/              Browser storage service
+  types/             Shared TypeScript types
+  [slug]/            Word lookup page
+  omileni/           Favorites page
+  zborko/            About page
+lib/
+  prisma.ts          Prisma client singleton
+  word-match.ts      Matching helpers (LIKE escaping, best-row selection)
+prisma/
+  schema.prisma      Database schema
+  migrations/        SQL migrations
+  seed.ts            Seed data
+```
+
+## Data
+
+`prisma/seed.ts` loads the dictionary used by the app. The **code** in this
+repository is licensed under the MIT license (see [LICENSE](./LICENSE)). The
+dictionary **data** is a separate work with its own provenance and licensing;
+confirm that you have the right to redistribute it, or replace it with a dataset
+whose license permits redistribution, before publishing or deploying it publicly.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Please read the
+[Code of Conduct](CODE_OF_CONDUCT.md) and the [Security Policy](SECURITY.md).
+
+## License
+
+[MIT](LICENSE) © Sara Mitevska
