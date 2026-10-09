@@ -5,7 +5,8 @@ import { WordCard } from './components/WordCard';
 import { Logo } from './components/Logo';
 import { cn } from '@/lib/utils';
 import api from '@/app/constants/api';
-import { letters } from '@/app/constants/general';
+import { avatarLetters } from '@/app/constants/general';
+import type { IWord } from '@/app/types';
 
 export default function Home() {
   const [currentWord, setCurrentWord] = useState<IWord | null>(null);
@@ -24,7 +25,16 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchRandomWord();
+    let active = true;
+
+    (async () => {
+      const res = await fetch(api.random);
+      const word = await res.json();
+      if (!active) return;
+      setCurrentWord(word);
+      setLoading(false);
+    })();
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight' || e.key === ' ') {
         fetchRandomWord();
@@ -32,7 +42,10 @@ export default function Home() {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      active = false;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   return (
@@ -87,7 +100,7 @@ export default function Home() {
                 className="flex gap-4 pt-4"
               >
                 <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((i) => (
+                  {avatarLetters.map((letter, i) => (
                     <div
                       key={i}
                       className={cn(
@@ -101,19 +114,23 @@ export default function Home() {
                               : 'bg-sky-500'
                       )}
                     >
-                      {letters[Math.floor(Math.random() * letters.length)]}
+                      {letter}
                     </div>
                   ))}
                 </div>
                 <div className="text-sm flex flex-col justify-center">
-                  <span className="font-bold text-zinc-900">10,000+</span>
-                  <span className="text-zinc-500">Активни корисници денес</span>
+                  <span className="font-bold text-zinc-900">Збор по збор</span>
+                  <span className="text-zinc-500">секој ден</span>
                 </div>
               </motion.div>
             </div>
 
             <div className="flex justify-center md:justify-end w-full">
-              <WordCard data={currentWord} onNext={handleNextWord} />
+              <WordCard
+                key={currentWord?.id}
+                data={currentWord}
+                onNext={handleNextWord}
+              />
             </div>
           </div>
         )}

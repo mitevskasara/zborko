@@ -1,9 +1,12 @@
+import type { IWord } from '@/app/types';
+
 export const StorageService = {
-  get(key: string) {
+  get(key: string): IWord[] {
     if (typeof window !== 'undefined') {
       const data = localStorage.getItem(key);
       return data ? JSON.parse(data) : [];
     }
+    return [];
   },
 
   exists(key: string, value: IWord) {
@@ -13,6 +16,7 @@ export const StorageService = {
         (item: IWord) => JSON.stringify(item) === JSON.stringify(value)
       );
     }
+    return false;
   },
 
   save(key: string, value: IWord) {
@@ -25,6 +29,7 @@ export const StorageService = {
       if (!isDuplicate) {
         existing.push(value);
         localStorage.setItem(key, JSON.stringify(existing));
+        window.dispatchEvent(new Event('zborko:storage'));
       }
 
       return !isDuplicate;
@@ -38,12 +43,14 @@ export const StorageService = {
         (item: IWord) => JSON.stringify(item) !== JSON.stringify(value)
       );
       localStorage.setItem(key, JSON.stringify(filtered));
+      window.dispatchEvent(new Event('zborko:storage'));
     }
   },
 
   clear(key: string) {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(key);
+      window.dispatchEvent(new Event('zborko:storage'));
     }
   },
 };

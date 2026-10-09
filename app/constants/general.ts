@@ -1,3 +1,5 @@
+export const avatarLetters = ['А', 'Б', 'В', 'Г'];
+
 export const letters = [
   'А',
   'Б',
