@@ -112,7 +112,7 @@ export default function About() {
           <div className="flex-shrink-0 text-center md:text-right">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 rounded-full text-sm font-medium mb-2">
               <Coffee size={16} className="text-amber-400" />
-              <span>Спонзорирано од мерак и кофеин</span>
+              <span>Спонзорирано од мерак</span>
             </div>
             <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold mt-2">
               Основано 2026
