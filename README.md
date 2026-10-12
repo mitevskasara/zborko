@@ -39,11 +39,8 @@ npm install
 
 ### 2. Configure the environment
 
-Copy the example environment file and set your database connection string:
-
-```bash
-cp .env.example .env
-```
+Create a `.env` file in the project root and set your database connection
+string:
 
 ```bash
 # .env
