@@ -1,4 +1,4 @@
-interface IWord {
+export interface IWord {
   id: number;
   zbor: string;
   vid: string;
@@ -6,14 +6,14 @@ interface IWord {
   znacenje: string;
 }
 
-interface ISimilarWord {
+export interface ISimilarWord {
   zbor: string;
   vid: string;
 }
 
-type TWordMatch = 'exact' | 'prefix-of-query' | 'query-is-prefix';
+export type TWordMatch = 'exact' | 'prefix-of-query' | 'query-is-prefix';
 
-interface IWordResponse extends IWord {
+export interface IWordResponse extends IWord {
   random?: boolean;
   match?: TWordMatch;
   similarWords?: ISimilarWord[];

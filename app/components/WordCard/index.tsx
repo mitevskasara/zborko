@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Share2, Heart, Copy, Check } from 'lucide-react';
 import { cn, extractExamples } from '@/lib/utils';
 import { StorageService } from '@/app/core/storage';
+import type { IWord } from '@/app/types';
 
 interface WordCardProps {
   data: IWord | null;
@@ -112,7 +113,8 @@ export const WordCard: React.FC<WordCardProps> = ({
                       (primer, i) =>
                         primer && (
                           <Fragment key={i}>
-                            "{primer?.trim()}"<br />
+                            &ldquo;{primer?.trim()}&rdquo;
+                            <br />
                           </Fragment>
                         )
                     )}

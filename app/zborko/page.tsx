@@ -1,14 +1,6 @@
 'use client';
 import { motion } from 'motion/react';
-import {
-  BookOpen,
-  Sparkles,
-  Brain,
-  Coffee,
-  Github,
-  Twitter,
-  Mail,
-} from 'lucide-react';
+import { BookOpen, Sparkles, Brain, Coffee, Github } from 'lucide-react';
 
 const features = [
   {
@@ -106,22 +98,13 @@ export default function About() {
             </p>
             <div className="flex gap-4 pt-2">
               <a
-                href="#"
+                href="https://github.com/mitevskasara/zborko"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub"
                 className="p-2 bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors text-white"
               >
                 <Github size={20} />
-              </a>
-              <a
-                href="#"
-                className="p-2 bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors text-white"
-              >
-                <Twitter size={20} />
-              </a>
-              <a
-                href="#"
-                className="p-2 bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors text-white"
-              >
-                <Mail size={20} />
               </a>
             </div>
           </div>

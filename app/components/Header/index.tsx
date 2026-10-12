@@ -10,7 +10,7 @@ export default function Header() {
   const favorites = useSaved();
 
   function isActive(path: string) {
-    return path == pathname.replace('/', '');
+    return path === pathname;
   }
 
   return (
